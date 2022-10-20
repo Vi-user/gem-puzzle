@@ -16,7 +16,7 @@ let steps = 0;
 //     }
 // }
 
-const getRandomArbitrary = (min, max) => {
+const getRandomNum = (min, max) => {
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
@@ -62,7 +62,7 @@ const swapElements = (matrix, a, b) => {
 const shuffleMatrix = (matrix) => {
     for (let i = 0; i < 100; i++) {
         const emptyElCoord = findCoordinates(matrix, EMPTY_TILE);
-        const chooseRandomCoord = getRandomArbitrary(0, 2);
+        const chooseRandomCoord = getRandomNum(0, 2);
         const isExtremeEl = (emptyElCoord[chooseRandomCoord] === 0 || emptyElCoord[chooseRandomCoord] === MATRIX_SIZE-1 )
         const elToMoveCoord = emptyElCoord.slice();
         if (isExtremeEl && emptyElCoord[chooseRandomCoord] === 0) {
@@ -72,7 +72,7 @@ const shuffleMatrix = (matrix) => {
             emptyElCoord[chooseRandomCoord]--
         }
         if (!isExtremeEl) {
-            emptyElCoord[chooseRandomCoord] = (getRandomArbitrary(0, 2) === 1) ?
+            emptyElCoord[chooseRandomCoord] = (getRandomNum(0, 2) === 1) ?
                 emptyElCoord[chooseRandomCoord] + 1:
                 emptyElCoord[chooseRandomCoord] - 1;
         }
@@ -101,50 +101,45 @@ const tryToMove = (matrix, curEl) => {
         steps++;
         setSteps(steps);
         swapElements(matrix, curElCoordinates, emptyElCoordinates);
-        checkIfGameOver(matrix)
+        if (checkIfGameOver(matrix)) return finishGame();
         console.log('can move, curElCoordinates:', curElCoordinates)
         return true;
     }
     return false
 }
 
-const checkIfGameOver = (matrix) => {
-    if (JSON.stringify(matrix) === JSON.stringify(RIGHT_ORDER)) {
-        console.log("Hooray! You solved the puzzle in ##:## and N moves!")
-    }
+function checkIfGameOver(matrix) {
+    return JSON.stringify(matrix) === JSON.stringify(RIGHT_ORDER);
 }
 
 /*=================DRAW PUZZLE===================*/
 
-const drawWrapper = () => {
-    const body = document.querySelector('body')
-    const wrapper = createElement('div', 'wrapper');
-    body.append(wrapper)
-}
-
-const createElement = (tag, ...classes) => {
+function createElement(tag, ...classes) {
     const node = document.createElement(tag);
     node.classList.add(...classes);
     return node;
 }
 
-const highlightWrongElement = (curEl) => {
+function drawWrapper() {
+    const body = document.querySelector('body')
+    const wrapper = createElement('div', 'wrapper');
+    body.append(wrapper)
+}
+
+function highlightWrongElement(curEl) {
     const items = document.querySelectorAll('.item');
     const curItem = Array.from(items).find(el => el.textContent === curEl);
     curItem.classList.add('warning')
-    setTimeout(function() {curItem.classList.remove('warning')} ,100)
+    setTimeout(function () {
+        curItem.classList.remove('warning')
+    }, 100)
 }
 
-const drawMatrix = (matrix) => {
+function drawMatrix(matrix) {
     console.log('drawMatrix');
-    // const body = document.querySelector('body')
-    // const wrapper = createElem('div', 'wrapper');
-    // const wrapper = document.querySelector('.wrapper')
     const node = document.querySelector('.time-score-row')
-
     const squaresContainer = createElement('div', 'squares-container');
-    // wrapper.append(squaresContainer)
-    node.after(squaresContainer)
+
     matrix.forEach(matrixRow => {
         const row = createElement('div', 'row');
         squaresContainer.append(row);
@@ -159,25 +154,28 @@ const drawMatrix = (matrix) => {
             row.append(tile)
         })
     })
-    // body.append(wrapper)
+    node.after(squaresContainer)
 
 }
 
 /*===================BUTTONS=====================*/
 
-// function createButton
+function createButton(tag, listener,  ...classes) {
+    const button = createElement('button', ...classes);
+    button.innerText = tag;
+    button.addEventListener('click', listener)
+    return button;
+}
 
-const addButtons = () => {
-    const buttons = ['restart', 'pause', 'save', 'result']
+function addButtons() {
     const wrapper = document.querySelector('.wrapper');
     const buttonsRow = createElement('div', 'buttons-row');
+    const resrartBtn = createButton('restart', restartGame, 'button', 'button-restart')
+    const pauseBtn = createButton('pause', pauseGame, 'button', 'button-pause')
+    const saveBtn = createButton('save', saveGame, 'button', 'button-save')
+    const resultBtn = createButton('result', showGameResults, 'button', 'button-result')
+    buttonsRow.append(resrartBtn, pauseBtn, saveBtn, resultBtn);
 
-    buttons.forEach(el => {
-        const button = createElement('button', 'button', `button-${el}`);
-
-        button.innerText = el;
-        buttonsRow.append(button);
-    })
     wrapper.append(buttonsRow);
 }
 
@@ -265,15 +263,16 @@ const addTileClickHandler = (matrix) => {
     })
 }
 
-// function initGameStates(value) {
-//     const gameState = {
-//         MATRIX_SIZE: value,
-//         EMPTY_TILE: '',
-//         moves: 0,
-//         time: 0,
-//     };
-//     return gameState;
-// }
+function initGameStates(value) {
+    const gameState = {
+        MATRIX_SIZE: value,
+        EMPTY_TILE: '',
+        isPaused: false,
+        moves: 0,
+        time: 0,
+    };
+    return gameState;
+}
 
 function startGame() {
     // const gameState = initGameStates(4)
@@ -286,9 +285,10 @@ function startGame() {
     drawMatrix(matrix);
     addSizeOptions();
     addTileClickHandler(matrix);
+    setInterval(timeIncrease, 1000);
+
 }
 
-//
 startGame()
 
 // const matrix = makeMatrix(MATRIX_SIZE*MATRIX_SIZE);
@@ -320,35 +320,47 @@ function restartGame() {
     time = 0;
 }
 
+function pauseGame() {
+    console.log('pauseGame')
+    pausedTimer()
+    // clearInterval(setTimerInterval);
+    const overlay = createElement('div', 'overlay')
+    const modal = createElement('div', 'modal')
+    const note = createElement('div', 'note')
+    note.textContent = 'You stopped the game, to continue press the button:'
+    const continueBtn = createElement('button', 'button', 'continue-button');
+    continueBtn.textContent = 'Continue';
+    continueBtn.addEventListener('click', continueGame);
+    // modal.append(note)
+    modal.append(note, continueBtn)
+    overlay.append(modal)
+    document.querySelector('body').prepend(overlay)
+}
+
 function continueGame() {
+    console.log('continueGame')
     const overlay = document.querySelector('.overlay');
     overlay.remove();
     startTimer();
-    // const setTimerInterval = setInterval(timeIncrease, 1000);
 }
 
-window.onload = function () {
-    const shuffleBtn = document.querySelector('.button-restart');
-    shuffleBtn.addEventListener('click', restartGame);
+function finishGame() {
+    console.log('finishGame')
+    pausedTimer()
+    const overlay = createElement('div', 'overlay')
+    const modal = createElement('div', 'modal')
+    const note = createElement('div', 'note')
+    note.textContent = `Hooray! You solved the puzzle in ${time}sec and ${steps} moves!`
+//make overlay only for puzzleContainer
+    modal.append(note)
+    overlay.append(modal)
+    document.querySelector('body').prepend(overlay)
+}
 
+function saveGame() {
+    console.log('saveGame')
+}
 
-    const stopBtn = document.querySelector('.button-pause');
-    stopBtn.addEventListener('click', pauseGame);
-    const setTimerInterval = setInterval(timeIncrease, 1000);
-    function pauseGame() {
-        console.log('stopGame')
-        pausedTimer()
-        // clearInterval(setTimerInterval);
-        const overlay = createElement('div', 'overlay')
-        const modal = createElement('div', 'modal')
-        const note = createElement('div', 'note')
-        note.textContent = 'You stopped the game, to continue press the button:'
-        const continueBtn = createElement('button', 'button', 'continue-button');
-        continueBtn.textContent = 'Continue';
-        continueBtn.addEventListener('click', continueGame);
-        // modal.append(note)
-        modal.append(note, continueBtn)
-        overlay.append(modal)
-        document.querySelector('body').prepend(overlay)
-    }
+function showGameResults() {
+    console.log('showGameResults')
 }
