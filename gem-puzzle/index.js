@@ -3,7 +3,7 @@ console.log('index.js');
 const MATRIX_SIZE = 4;
 const EMPTY_TILE = '';
 const RIGHT_ORDER = makeMatrix(MATRIX_SIZE*MATRIX_SIZE );
-// let steps = 0;
+let time = 0;
 
 const getRandomArbitrary = (min, max) => {
     return Math.floor(Math.random() * (max - min)) + min;
@@ -171,6 +171,18 @@ const addButtons = () => {
 
 /*===================Time & Score=====================*/
 
+function timeIncrease() {
+    time++;
+    setTime(time);
+}
+
+function setTime(value) {
+    const seconds = (value % 60).toString();
+    const minutes = Math.trunc(value / 60).toString();
+    const timer = document.querySelector('.timer');
+    timer.innerHTML = `${minutes.padStart(2, '0')}:${seconds.padStart(2, '0')}`;
+}
+
 function addTimeScore() {
     const wrapper = document.querySelector('.wrapper');
     const timeScoreRow = createElement('div', 'time-score-row');
@@ -181,11 +193,15 @@ function addTimeScore() {
     scoreTitle.textContent = `Moves: `;
     scoreSteps.textContent = 0;
     scoreContainer.append(scoreTitle, scoreSteps);
-    wrapper.append(scoreContainer);
 //TIMER
+    const timerContainer = createElement('div', 'timer-container');
+    const timeTitle = createElement('span', 'time-title');
+    const timer = createElement('span', 'timer');
+    timeTitle.textContent = `Time: `;
+    timer.textContent = '00:00';
+    timerContainer.append(timeTitle, timer);
 
-
-
+    timeScoreRow.append(scoreContainer, timerContainer);
     wrapper.append(timeScoreRow);
 }
 
@@ -245,5 +261,8 @@ const restartGame = () => {
 
 window.onload = function () {
     const shuffleBtn = document.querySelector('.button-shuffle');
-    shuffleBtn.addEventListener('click', restartGame)
+    shuffleBtn.addEventListener('click', restartGame);
+
+
+    setInterval(timeIncrease, 1000);
 }

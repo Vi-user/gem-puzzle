@@ -363,6 +363,12 @@ body {
   border: 2px solid orange;
 }
 
+.time-score-row {
+  display: flex;
+  justify-content: space-evenly;
+  width: 50vh;
+}
+
 .squares-container {
   backgound-color: #db7272;
   width: 50vh;
