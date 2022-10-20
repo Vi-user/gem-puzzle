@@ -1,8 +1,8 @@
 console.log('index.js');
 /*=================GAME LOGIC===================*/
-const MATRIX_SIZE = 4;
+let MATRIX_SIZE = 4;
 const EMPTY_TILE = '';
-const RIGHT_ORDER = makeMatrix(MATRIX_SIZE*MATRIX_SIZE );
+let RIGHT_ORDER = makeMatrix(MATRIX_SIZE*MATRIX_SIZE );
 let isPaused = false;
 let time = 0;
 let steps = 0;
@@ -60,6 +60,7 @@ const swapElements = (matrix, a, b) => {
 }
 
 const shuffleMatrix = (matrix) => {
+    console.log(MATRIX_SIZE, 'shuffleMatrix MATRIX_SIZE')
     for (let i = 0; i < 100; i++) {
         const emptyElCoord = findCoordinates(matrix, EMPTY_TILE);
         const chooseRandomCoord = getRandomNum(0, 2);
@@ -137,6 +138,7 @@ function highlightWrongElement(curEl) {
 
 function drawMatrix(matrix) {
     console.log('drawMatrix');
+    console.log('matrix',matrix)
     const node = document.querySelector('.time-score-row')
     const squaresContainer = createElement('div', 'squares-container');
 
@@ -243,7 +245,7 @@ function addSizeOptions() {
     for (let i = 3; i <= 8; i++) {
         const button = createElement('button', 'button', 'small-btn', `btn-size-${i}`)
         button.textContent = `${i}*${i}`
-        // button.addEventListener('click', restartGame)
+        button.addEventListener('click', restartGame)
         sizeOptionsRow.append(button);
     }
     wrapper.append(sizeOptionsRow)
@@ -263,6 +265,11 @@ const addTileClickHandler = (matrix) => {
     })
 }
 
+function setMatrixSize(value = 4) {
+    MATRIX_SIZE = value;
+    // return value;
+}
+
 function initGameStates(value) {
     const gameState = {
         MATRIX_SIZE: value,
@@ -277,6 +284,7 @@ function initGameStates(value) {
 function startGame() {
     // const gameState = initGameStates(4)
     // const matrix = makeMatrix(gameState.MATRIX_SIZE * gameState.MATRIX_SIZE);
+    setMatrixSize(4);
     const matrix = makeMatrix(MATRIX_SIZE * MATRIX_SIZE);
     shuffleMatrix(matrix);
     drawWrapper();
@@ -306,12 +314,17 @@ startGame()
 // console.log('canMove(2)', tryToMove(2));
 // console.log('matrix AFTER', matrix)
 
-function restartGame() {
-    // const matrixSize = e.target.innerText.slice(-1);
+function restartGame(e) {
+    e.preventDefault();
+    console.log(e.target.innerText.slice(-1), 'e.target.innerText.slice(-1)')
+    const matrixSize = e.target.innerText.slice(-1);
+    setMatrixSize(matrixSize);
+    RIGHT_ORDER = makeMatrix(matrixSize*matrixSize)
     console.log('restartGame')
     document.querySelector('.squares-container').remove();
-    const matrix = makeMatrix(MATRIX_SIZE*MATRIX_SIZE);
-    // const matrix = makeMatrix(matrixSize * matrixSize);
+    // const matrix = makeMatrix(MATRIX_SIZE*MATRIX_SIZE);
+    const matrix = makeMatrix(matrixSize * matrixSize);
+    console.log(matrix, 'restart matrix')
     shuffleMatrix(matrix);
     drawMatrix(matrix);
     addTileClickHandler(matrix);
