@@ -1,0 +1,16 @@
+.buttons-row {
+  display: flex;
+  justify-content: space-between;
+  width: 50vh;
+  margin-top: 20px;
+}
+
+.button {
+  padding: 1rem 1.5rem;
+  min-width: 10rem;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: dimgrey;
+  color: white;
+  border: 2px solid orange;
+}
