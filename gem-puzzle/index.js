@@ -256,13 +256,41 @@ const restartGame = () => {
     drawMatrix(matrix);
     addTileClickHandler(matrix);
     document.querySelector('.score-steps').textContent = 0;
-    // timer = 0
+    document.querySelector('.timer').textContent = '00:00';
+    time = 0;
 }
+
+function continueGame() {
+    const overlay = document.querySelector('.overlay');
+    overlay.remove();
+    const setTimerInterval = setInterval(timeIncrease, 1000);
+}
+
+
+
+
 
 window.onload = function () {
     const shuffleBtn = document.querySelector('.button-shuffle');
     shuffleBtn.addEventListener('click', restartGame);
 
 
-    setInterval(timeIncrease, 1000);
+    const stopBtn = document.querySelector('.button-stop');
+    stopBtn.addEventListener('click', stopGame);
+    const setTimerInterval = setInterval(timeIncrease, 1000);
+    function stopGame() {
+        console.log('stopGame')
+        clearInterval(setTimerInterval);
+        const overlay = createElement('div', 'overlay')
+        const modal = createElement('div', 'modal')
+        const note = createElement('div', 'note')
+        note.textContent = 'You stopped the game, to continue press the button:'
+        const continueBtn = createElement('button', 'button', 'continue-button');
+        continueBtn.textContent = 'Continue';
+        continueBtn.addEventListener('click', continueGame);
+        // modal.append(note)
+        modal.append(note, continueBtn)
+        overlay.append(modal)
+        document.querySelector('body').prepend(overlay)
+    }
 }
