@@ -1,0 +1,16 @@
+.matrrix-sizes-container{
+  width: 90%;
+}
+
+.matrix-sizes-description {
+  margin-bottom: 20px;
+}
+
+.matrix-sizes-row {
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  width: 100%;
+  gap: 30px;
+  margin-top: 20px;
+}

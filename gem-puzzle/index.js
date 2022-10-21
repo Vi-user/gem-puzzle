@@ -238,17 +238,19 @@ function addTimeScore() {
 
 function addSizeOptions() {
     const wrapper = document.querySelector('.wrapper');
-    const sizeOptionsRow = createElement('div', 'matrix-sizes-row');
+    const sizeOptionsContainer = createElement('div', 'matrix-sizes-container');
     const sizeDescription = createElement('p', 'matrix-sizes-description');
     sizeDescription.textContent = 'You can choose another size of puzzle:'
-    sizeOptionsRow.append(sizeDescription)
+
+    const sizeOptionsRow = createElement('div', 'matrix-sizes-row');
     for (let i = 3; i <= 8; i++) {
         const button = createElement('button', 'button', 'small-btn', `btn-size-${i}`)
         button.textContent = `${i}*${i}`
         button.addEventListener('click', restartGame)
         sizeOptionsRow.append(button);
     }
-    wrapper.append(sizeOptionsRow)
+    sizeOptionsContainer.append(sizeDescription, sizeOptionsRow)
+    wrapper.append(sizeOptionsContainer)
 }
 
 /*=================CONTROLLER===================*/
@@ -270,16 +272,16 @@ function setMatrixSize(value = 4) {
     // return value;
 }
 
-function initGameStates(value) {
-    const gameState = {
-        MATRIX_SIZE: value,
-        EMPTY_TILE: '',
-        isPaused: false,
-        moves: 0,
-        time: 0,
-    };
-    return gameState;
-}
+// function initGameStates(value) {
+//     const gameState = {
+//         MATRIX_SIZE: value,
+//         EMPTY_TILE: '',
+//         isPaused: false,
+//         moves: 0,
+//         time: 0,
+//     };
+//     return gameState;
+// }
 
 function startGame() {
     // const gameState = initGameStates(4)
@@ -318,7 +320,7 @@ function restartGame(e) {
     e.preventDefault();
     console.log(e.target.innerText.slice(-1), 'e.target.innerText.slice(-1)')
     const matrixSize = e.target.innerText.slice(-1);
-    setMatrixSize(matrixSize);
+    setMatrixSize(matrixSize || 4);
     RIGHT_ORDER = makeMatrix(matrixSize*matrixSize)
     console.log('restartGame')
     document.querySelector('.squares-container').remove();
@@ -347,7 +349,8 @@ function pauseGame() {
     // modal.append(note)
     modal.append(note, continueBtn)
     overlay.append(modal)
-    document.querySelector('body').prepend(overlay)
+    // document.querySelector('body').prepend(overlay)
+    document.querySelector('.squares-container').prepend(overlay)
 }
 
 function continueGame() {
@@ -363,7 +366,7 @@ function finishGame() {
     const overlay = createElement('div', 'overlay')
     const modal = createElement('div', 'modal')
     const note = createElement('div', 'note')
-    note.textContent = `Hooray! You solved the puzzle in ${time}sec and ${steps} moves!`
+    note.textContent = `Hooray! You solved the puzzle in ${setTime(time)} and ${steps} moves!`
 //make overlay only for puzzleContainer
     modal.append(note)
     overlay.append(modal)

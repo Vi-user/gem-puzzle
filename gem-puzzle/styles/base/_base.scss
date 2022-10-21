@@ -1,3 +1,7 @@
+* {
+  box-sizing: border-box;
+}
+
 html {
   font-size: 10px;
   overflow-x: hidden;
@@ -6,15 +10,17 @@ html {
 
 body {
   font-family: 'Roboto';
-  background-color: #f3e0a9;
-  font-size: 2rem;
+  background: -webkit-linear-gradient(90deg,#a2a49f,#e0d0c4,#f1dac4); /* Chrome 10-25, Safari 5.1-6 */ background: linear-gradient(90deg,#a2a49f,#e0d0c4,#f1dac4); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  font-size: 3rem;
+  font-weight: bold;
 }
 
 .wrapper {
-  width: 1000px;
+  width: 100%;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 30px;
+  padding: 40px 20px;
 }
