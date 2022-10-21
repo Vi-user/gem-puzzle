@@ -209,7 +209,10 @@ function setTime(value) {
     const seconds = (value % 60).toString();
     const minutes = Math.trunc(value / 60).toString();
     const timer = document.querySelector('.timer');
-    timer.innerHTML = `${minutes.padStart(2, '0')}:${seconds.padStart(2, '0')}`;
+    const timeInMins = `${minutes.padStart(2, '0')}:${seconds.padStart(2, '0')}`;
+    timer.innerHTML = timeInMins;
+    return timeInMins;
+
 }
 
 function addTimeScore() {
@@ -269,7 +272,6 @@ const addTileClickHandler = (matrix) => {
 
 function setMatrixSize(value = 4) {
     MATRIX_SIZE = value;
-    // return value;
 }
 
 // function initGameStates(value) {
@@ -370,7 +372,7 @@ function finishGame() {
 //make overlay only for puzzleContainer
     modal.append(note)
     overlay.append(modal)
-    document.querySelector('body').prepend(overlay)
+    document.querySelector('.squares-container').prepend(overlay)
 }
 
 function saveGame() {
