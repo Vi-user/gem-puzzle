@@ -342,6 +342,11 @@ body {
   font-size: 3rem;
   font-weight: bold;
 }
+@media screen and (max-device-width: 500px) {
+  body {
+    font-size: 1.5rem;
+  }
+}
 
 .wrapper {
   width: 100%;
@@ -399,7 +404,7 @@ body {
   background: -webkit-linear-gradient(50deg, #a2a49f, #e0d0c4, #f1dac4); /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(50deg, #a2a49f, #e0d0c4, #f1dac4); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   aspect-ratio: 1/1;
-  border: 3px solid black;
+  border: 1px solid black;
   flex: 1;
   display: flex;
   align-items: center;
@@ -408,14 +413,30 @@ body {
   overflow: hidden;
   cursor: pointer;
 }
+@media screen and (max-device-width: 650px) {
+  .item {
+    font-size: 2rem;
+  }
+}
+@media screen and (max-device-width: 650px) {
+  .item {
+    font-size: 1.5rem;
+  }
+}
+@media screen and (max-device-width: 430px) {
+  .item {
+    font-size: 1rem;
+  }
+}
 
 .empty-tile {
-  color: #696c2d;
+  background: -webkit-linear-gradient(270deg, #454545, #212121); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(270deg, #454545, #212121); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   cursor: none;
 }
 
 .warning {
-  background-color: red;
+  color: red;
 }
 
 .overlay {
