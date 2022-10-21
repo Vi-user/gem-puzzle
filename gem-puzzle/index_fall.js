@@ -1,31 +1,39 @@
 console.log('index.js');
 /*=================GAME LOGIC===================*/
-let MATRIX_SIZE = 4;
-const EMPTY_TILE = '';
-let RIGHT_ORDER = makeMatrix(MATRIX_SIZE*MATRIX_SIZE );
-let isPaused = false;
-let time = 0;
-let steps = 0;
-let allowSounds = true;
+// let MATRIX_SIZE = 4;
+// const EMPTY_TILE = '';
+// let RIGHT_ORDER = makeMatrix(MATRIX_SIZE*MATRIX_SIZE );
+// let isPaused = false;
+// let time = 0;
+// let steps = 0;
+
+// class Matrix {
+//     constructor(size, ) {
+//         this.MATRIX_SIZE = size;
+//         this.EMPTY_TILE = '';
+//         this.time = 0;
+//         this.steps = 0;
+//     }
+// }
 
 const getRandomNum = (min, max) => {
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
-function makeMatrix(n) {
+function makeMatrix(gameState) {
     const array = [];
-    for (let i = 1; i < n; i++) {
+    for (let i = 1; i < gameState.TILES_QUANTITY; i++) {
         array.push(i.toString());
     }
-    array.push(EMPTY_TILE);
+    array.push(gameState.EMPTY_TILE);
 
     const matrix = [];
-    const matrixSize = Math.sqrt(n);
+    // const matrixSize = Math.sqrt(n);
 
-    for (let i = 0; i < matrixSize; i++) {
-        matrix.push(array.slice(i * matrixSize, i * matrixSize + matrixSize))
+    for (let i = 0; i < gameState.MATRIX_SIZE; i++) {
+        matrix.push(array.slice(i * gameState.MATRIX_SIZE, i * gameState.MATRIX_SIZE + gameState.MATRIX_SIZE))
     }
-
+    gameState.RIGHT_ORDER = matrix;
     return matrix;
 }
 
@@ -51,17 +59,17 @@ const swapElements = (matrix, a, b) => {
     [matrix[x1][y1], matrix[x2][y2]] = [matrix[x2][y2], matrix[x1][y1]]
 }
 
-const shuffleMatrix = (matrix) => {
-    console.log(MATRIX_SIZE, 'shuffleMatrix MATRIX_SIZE')
-    for (let i = 0; i < MATRIX_SIZE*25; i++) {
-        const emptyElCoord = findCoordinates(matrix, EMPTY_TILE);
+const shuffleMatrix = (matrix, gameState) => {
+    console.log(gameState.MATRIX_SIZE, 'shuffleMatrix MATRIX_SIZE')
+    for (let i = 0; i < 100; i++) {
+        const emptyElCoord = findCoordinates(matrix, gameState.EMPTY_TILE);
         const chooseRandomCoord = getRandomNum(0, 2);
-        const isExtremeEl = (emptyElCoord[chooseRandomCoord] === 0 || emptyElCoord[chooseRandomCoord] === MATRIX_SIZE-1 )
+        const isExtremeEl = (emptyElCoord[chooseRandomCoord] === 0 || emptyElCoord[chooseRandomCoord] === gameState.MATRIX_SIZE-1 )
         const elToMoveCoord = emptyElCoord.slice();
         if (isExtremeEl && emptyElCoord[chooseRandomCoord] === 0) {
             emptyElCoord[chooseRandomCoord]++
         }
-        if (isExtremeEl && emptyElCoord[chooseRandomCoord] === MATRIX_SIZE-1) {
+        if (isExtremeEl && emptyElCoord[chooseRandomCoord] === gameState.MATRIX_SIZE-1) {
             emptyElCoord[chooseRandomCoord]--
         }
         if (!isExtremeEl) {
@@ -128,7 +136,7 @@ function highlightWrongElement(curEl) {
     }, 100)
 }
 
-function drawMatrix(matrix) {
+function drawMatrix(matrix, gameState) {
     console.log('drawMatrix');
     console.log('matrix',matrix)
     const node = document.querySelector('.time-score-row')
@@ -140,7 +148,7 @@ function drawMatrix(matrix) {
         matrixRow.forEach(el => {
             // console.log('el', el);
             const tile = createElement('div', 'item');
-            if (el === EMPTY_TILE) {
+            if (el === gameState.EMPTY_TILE) {
 
                 tile.classList.add('empty-tile');
             }
@@ -149,13 +157,14 @@ function drawMatrix(matrix) {
         })
     })
     node.after(squaresContainer)
+
 }
 
 /*===================BUTTONS=====================*/
 
-function createButton(name, listener,  ...classes) {
+function createButton(tag, listener,  ...classes) {
     const button = createElement('button', ...classes);
-    button.innerText = name;
+    button.innerText = tag;
     button.addEventListener('click', listener)
     return button;
 }
@@ -163,16 +172,15 @@ function createButton(name, listener,  ...classes) {
 function addButtons() {
     const wrapper = document.querySelector('.wrapper');
     const buttonsRow = createElement('div', 'buttons-row');
-    const restartBtn = createButton('restart', restartGame, 'button', 'button-restart')
+    const resrartBtn = createButton('restart', restartGame, 'button', 'button-restart')
     const pauseBtn = createButton('pause', pauseGame, 'button', 'button-pause')
     const saveBtn = createButton('save', saveGame, 'button', 'button-save')
     const resultBtn = createButton('result', showGameResults, 'button', 'button-result')
-    const soundIcon = createElement('span', 'icon', 'icon-sound', 'icon-sound_on');
-    soundIcon.addEventListener('click', switchMusic)
-    buttonsRow.append(restartBtn, pauseBtn, saveBtn, resultBtn, soundIcon);
+    buttonsRow.append(resrartBtn, pauseBtn, saveBtn, resultBtn);
 
     wrapper.append(buttonsRow);
 }
+
 
 /*===================Time & Score=====================*/
 
@@ -181,19 +189,20 @@ function setSteps(steps) {
     stepsContainer.innerHTML = steps;
 }
 
-function startTimer() {
-    isPaused = false
+function startTimer(gameState) {
+    gameState.isPaused = false
 }
 
-function pausedTimer() {
-    isPaused = true
+function pausedTimer(gameState) {
+    gameState.isPaused = true
 }
 
-function timeIncrease() {
-    if(!isPaused) {
-        time++;
-        setTime(time);
+function timeIncrease(gameState) {
+    if(!gameState.isPaused) {
+        gameState.time++;
+        setTime(gameState.time);
     }
+
 }
 
 function setTime(value) {
@@ -203,9 +212,10 @@ function setTime(value) {
     const timeInMins = `${minutes.padStart(2, '0')}:${seconds.padStart(2, '0')}`;
     timer.innerHTML = timeInMins;
     return timeInMins;
+
 }
 
-function addTimeScore() {
+function addTimeScore(gameState) {
     const wrapper = document.querySelector('.wrapper');
     const timeScoreRow = createElement('div', 'time-score-row');
 //SCORE
@@ -213,7 +223,7 @@ function addTimeScore() {
     const scoreTitle = createElement('span', 'score-title');
     const scoreSteps = createElement('span', 'score-steps');
     scoreTitle.textContent = `Moves: `;
-    scoreSteps.textContent = steps;
+    scoreSteps.textContent = gameState.steps;
     scoreContainer.append(scoreTitle, scoreSteps);
 //TIMER
     const timerContainer = createElement('div', 'timer-container');
@@ -239,7 +249,7 @@ function addSizeOptions() {
     for (let i = 3; i <= 8; i++) {
         const button = createElement('button', 'button', 'small-btn', `btn-size-${i}`)
         button.textContent = `${i}*${i}`
-        button.addEventListener('click', matrixChangeSize)
+        button.addEventListener('click', restartGame)
         sizeOptionsRow.append(button);
     }
     sizeOptionsContainer.append(sizeDescription, sizeOptionsRow)
@@ -251,18 +261,10 @@ const addTileClickHandler = (matrix) => {
     document.querySelector('.squares-container').addEventListener('click', (e) => {
         const value = e.target.innerText;
         if (tryToMove(matrix, value)) {
-            if (allowSounds) {
-                const whooshSound = new Audio('./styles/sounds/whoosh.mp3')
-                whooshSound.play();
-            }
             document.querySelector('.squares-container').remove();
             drawMatrix(matrix);
             addTileClickHandler(matrix);
         } else {
-            if (allowSounds) {
-                const whooshSound = new Audio('./styles/sounds/oou.mp3')
-                whooshSound.play();
-            }
             highlightWrongElement(value);
         }
     })
@@ -272,50 +274,76 @@ function setMatrixSize(value = 4) {
     MATRIX_SIZE = value;
 }
 
+function initGameStates(value = 4) {
+    const gameState = {
+        MATRIX_SIZE: value,
+        TILES_QUANTITY: value*value,
+        EMPTY_TILE: '',
+        isPaused: false,
+        steps: 0,
+        time: 0,
+    };
+    return gameState;
+}
+
 function startGame() {
-    setMatrixSize(4);
-    const matrix = makeMatrix(MATRIX_SIZE * MATRIX_SIZE);
-    shuffleMatrix(matrix);
+    console.log('gameState')
+    const gameState = initGameStates(4)
+    console.log(gameState)
+    // const matrix = makeMatrix(gameState.MATRIX_SIZE * gameState.MATRIX_SIZE);
+    // setMatrixSize(4);
+    const matrix = makeMatrix(gameState);
+    shuffleMatrix(matrix, gameState);
     drawWrapper();
     addButtons();
-    addTimeScore();
-    drawMatrix(matrix);
+    addTimeScore(gameState);
+    drawMatrix(matrix, gameState);
     addSizeOptions();
     addTileClickHandler(matrix);
-    setInterval(timeIncrease, 1000);
+    setInterval(timeIncrease(gameState), 1000);
 
 }
 
 startGame()
 
-function restartGame() {
+// const matrix = makeMatrix(MATRIX_SIZE*MATRIX_SIZE);
+// const matrix =[
+//     [ '1', '2', '3', '4' ],
+//     [ '5', '6', '', '8' ],
+//     [ '9', '10', '11', '12' ],
+//     [ '13', '14', '15', '7' ]
+// ]
+// console.log('matrix START', matrix)
+// console.log('shuffleMatrix(matrix)', shuffleMatrix(matrix));
+// // tryToMove(matrix, '11')
+// // console.log('canMove(11)', tryToMove('11'));
+// console.log('matrix AFTER', matrix)
+// console.log('canMove(2)', tryToMove(2));
+// console.log('matrix AFTER', matrix)
+
+function restartGame(e) {
+    e.preventDefault();
+    console.log(e.target.innerText.slice(-1), 'e.target.innerText.slice(-1)')
+    const matrixSize = e.target.innerText.slice(-1);
+    setMatrixSize(matrixSize || 4);
+    RIGHT_ORDER = makeMatrix(matrixSize*matrixSize)
     console.log('restartGame')
     document.querySelector('.squares-container').remove();
-    const matrix = makeMatrix(MATRIX_SIZE*MATRIX_SIZE);
+    // const matrix = makeMatrix(MATRIX_SIZE*MATRIX_SIZE);
+    const matrix = makeMatrix(matrixSize * matrixSize);
     console.log(matrix, 'restart matrix')
     shuffleMatrix(matrix);
     drawMatrix(matrix);
     addTileClickHandler(matrix);
-    startTimer();
     document.querySelector('.score-steps').textContent = 0;
     document.querySelector('.timer').textContent = '00:00';
     time = 0;
 }
 
-function matrixChangeSize(e) {
-    console.log('restartGameChangeSize')
-    e.preventDefault();
-    console.log(e.target.innerText.slice(-1), 'e.target.innerText.slice(-1)')
-    const matrixSize = e.target.innerText.slice(-1);
-    setMatrixSize(matrixSize);
-    RIGHT_ORDER = makeMatrix(matrixSize*matrixSize)
-    restartGame();
-}
-
 function pauseGame() {
-    document.querySelector('.button-pause').removeEventListener('click', pauseGame)
     console.log('pauseGame')
     pausedTimer()
+    // clearInterval(setTimerInterval);
     const overlay = createElement('div', 'overlay')
     const modal = createElement('div', 'modal')
     const note = createElement('div', 'note')
@@ -323,8 +351,10 @@ function pauseGame() {
     const continueBtn = createElement('button', 'button', 'continue-button');
     continueBtn.textContent = 'Continue';
     continueBtn.addEventListener('click', continueGame);
+    // modal.append(note)
     modal.append(note, continueBtn)
     overlay.append(modal)
+    // document.querySelector('body').prepend(overlay)
     document.querySelector('.squares-container').prepend(overlay)
 }
 
@@ -333,18 +363,15 @@ function continueGame() {
     const overlay = document.querySelector('.overlay');
     overlay.remove();
     startTimer();
-    document.querySelector('.button-pause').addEventListener('click', pauseGame)
 }
 
 function finishGame() {
     console.log('finishGame')
-    pausedTimer();
-    document.querySelector('.button-pause').removeEventListener('click', pauseGame);
+    pausedTimer()
     const overlay = createElement('div', 'overlay')
     const modal = createElement('div', 'modal')
     const note = createElement('div', 'note')
     note.textContent = `Hooray! You solved the puzzle in ${setTime(time)} and ${steps} moves!`
-//make overlay only for puzzleContainer
     modal.append(note)
     overlay.append(modal)
     document.querySelector('.squares-container').prepend(overlay)
@@ -356,10 +383,4 @@ function saveGame() {
 
 function showGameResults() {
     console.log('showGameResults')
-}
-
-function switchMusic() {
-    const switcher = document.querySelector('.icon-sound');
-    switcher.classList.toggle('icon-sound_off');
-    allowSounds = (!allowSounds);
 }

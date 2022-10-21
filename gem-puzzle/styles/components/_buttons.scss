@@ -1,6 +1,7 @@
 .buttons-row {
   display: flex;
   justify-content: space-evenly;
+  align-items: center;
   flex-wrap: wrap;
   width: 90%;
   gap: 30px;
@@ -16,4 +17,25 @@
   color: black;
   border: 2px solid black;
   box-shadow: -8px -8px 20px #2A333D, 10px 7px 20px #475462;
+}
+
+.icon {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  background: -webkit-linear-gradient(50deg,#a2a49f,#e0d0c4,#f1dac4); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(50deg,#a2a49f,#e0d0c4,#f1dac4); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.icon-sound {
+  &_on {
+    background-image: url('./icon/soundOn.svg');
+    background-size: 109%;
+    background-repeat: no-repeat;
+  }
+  &_off {
+    background-image: url('./icon/soundOff.svg');
+    background-size: 100%;
+    background-repeat: no-repeat;
+  }
 }

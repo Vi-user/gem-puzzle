@@ -18,6 +18,10 @@
 .note {
   font-size: 3rem;
   margin-bottom: 50px;
+  @media screen and (max-device-width: 650px){
+    font-size: 1.5rem;
+    margin-bottom: 30px;
+  }
 }
 
 .continue-button {
