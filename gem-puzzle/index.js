@@ -3,6 +3,7 @@ console.log('index.js');
 let MATRIX_SIZE = 4;
 const EMPTY_TILE = '';
 let RIGHT_ORDER = makeMatrix(MATRIX_SIZE*MATRIX_SIZE );
+let matrixCurState = [];
 let isPaused = false;
 let time = 0;
 let steps = 0;
@@ -53,6 +54,7 @@ const swapElements = (matrix, a, b) => {
 
 const shuffleMatrix = (matrix) => {
     console.log(MATRIX_SIZE, 'shuffleMatrix MATRIX_SIZE')
+    // for (let i = 0; i <2; i++) {
     for (let i = 0; i < MATRIX_SIZE*25; i++) {
         const emptyElCoord = findCoordinates(matrix, EMPTY_TILE);
         const chooseRandomCoord = getRandomNum(0, 2);
@@ -71,6 +73,7 @@ const shuffleMatrix = (matrix) => {
         }
         swapElements(matrix, elToMoveCoord , emptyElCoord)
     }
+    matrixCurState = matrix;
     return matrix;
 }
 
@@ -94,6 +97,7 @@ const tryToMove = (matrix, curEl) => {
         steps++;
         setSteps(steps);
         swapElements(matrix, curElCoordinates, emptyElCoordinates);
+        matrixCurState = matrix;
         if (checkIfGameOver(matrix)) return finishGame();
         console.log('can move, curElCoordinates:', curElCoordinates)
         return true;
@@ -300,6 +304,8 @@ function restartGame() {
     document.querySelector('.score-steps').textContent = 0;
     document.querySelector('.timer').textContent = '00:00';
     time = 0;
+    steps = 0;
+    matrixCurState = [];
 }
 
 function matrixChangeSize(e) {
@@ -315,16 +321,9 @@ function matrixChangeSize(e) {
 function pauseGame() {
     document.querySelector('.button-pause').removeEventListener('click', pauseGame)
     console.log('pauseGame')
-    pausedTimer()
-    const overlay = createElement('div', 'overlay')
-    const modal = createElement('div', 'modal')
-    const note = createElement('div', 'note')
-    note.textContent = 'You stopped the game, to continue press the button:'
-    const continueBtn = createElement('button', 'button', 'continue-button');
-    continueBtn.textContent = 'Continue';
-    continueBtn.addEventListener('click', continueGame);
-    modal.append(note, continueBtn)
-    overlay.append(modal)
+    pausedTimer();
+    const continueBtn = createButton('continue', continueGame, 'button', 'continue-button');
+    const overlay = makeModalWindow('You stopped the game, to continue press the button:', continueBtn)
     document.querySelector('.squares-container').prepend(overlay)
 }
 
@@ -340,18 +339,36 @@ function finishGame() {
     console.log('finishGame')
     pausedTimer();
     document.querySelector('.button-pause').removeEventListener('click', pauseGame);
-    const overlay = createElement('div', 'overlay')
-    const modal = createElement('div', 'modal')
-    const note = createElement('div', 'note')
-    note.textContent = `Hooray! You solved the puzzle in ${setTime(time)} and ${steps} moves!`
-//make overlay only for puzzleContainer
-    modal.append(note)
-    overlay.append(modal)
+    const overlay = makeModalWindow(`Hooray! You solved the puzzle in ${setTime(time)} and ${steps} moves!`)
     document.querySelector('.squares-container').prepend(overlay)
+}
+
+function returnUnfinishedGame() {
+    console.log('returnUnfinishedGame');
+    console.log(JSON.parse(localStorage.lastGame), 'JSON.parse(localStorage.lastGame)')
+    const lastGame = JSON.parse(localStorage.lastGame);
+    matrixCurState = lastGame.matrix;
+    time = lastGame.timer;
+    steps = lastGame.moves;
+    document.querySelector('.squares-container').remove();
+    drawMatrix(matrixCurState);
+    addTileClickHandler(matrixCurState);
+    startTimer();
+    setSteps(steps);
+    document.querySelector('.button-unfinished').remove();
+    localStorage.removeItem('lastGame')
+    // const btnLastGame = document.querySelector('.button-unfinished');
 }
 
 function saveGame() {
     console.log('saveGame')
+    pausedTimer();
+    const lastGame = {matrix: matrixCurState, moves: steps, timer: time}
+    console.log(JSON.stringify(lastGame), 'JSON.stringify(lastGame)')
+    localStorage.setItem('lastGame', JSON.stringify(lastGame))
+    const btnLastGame = createButton('continue', returnUnfinishedGame, 'button', 'button-unfinished')
+    const saveBtn = document.querySelector('.button-save');
+    saveBtn.after(btnLastGame);
 }
 
 function showGameResults() {
@@ -362,4 +379,17 @@ function switchMusic() {
     const switcher = document.querySelector('.icon-sound');
     switcher.classList.toggle('icon-sound_off');
     allowSounds = (!allowSounds);
+}
+
+function makeModalWindow(message, button) {
+    const overlay = createElement('div', 'overlay');
+    const modal = createElement('div', 'modal');
+    const note = createElement('div', 'note');
+    note.textContent = message;
+    modal.append(note)
+    if (button) {
+        modal.append(button)
+    }
+    overlay.append(modal)
+    return overlay;
 }
