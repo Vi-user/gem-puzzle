@@ -8,6 +8,7 @@ let isPaused = false;
 let time = 0;
 let steps = 0;
 let allowSounds = true;
+let existSavedGame = localStorage.hasOwnProperty('lastGame');
 
 const getRandomNum = (min, max) => {
     return Math.floor(Math.random() * (max - min)) + min;
@@ -54,8 +55,8 @@ const swapElements = (matrix, a, b) => {
 
 const shuffleMatrix = (matrix) => {
     console.log(MATRIX_SIZE, 'shuffleMatrix MATRIX_SIZE')
-    // for (let i = 0; i <2; i++) {
-    for (let i = 0; i < MATRIX_SIZE*25; i++) {
+    for (let i = 0; i < 5; i++) {
+    // for (let i = 0; i < MATRIX_SIZE*25; i++) {
         const emptyElCoord = findCoordinates(matrix, EMPTY_TILE);
         const chooseRandomCoord = getRandomNum(0, 2);
         const isExtremeEl = (emptyElCoord[chooseRandomCoord] === 0 || emptyElCoord[chooseRandomCoord] === MATRIX_SIZE-1 )
@@ -282,6 +283,7 @@ function startGame() {
     shuffleMatrix(matrix);
     drawWrapper();
     addButtons();
+    if (existSavedGame) drawSaveGameBtn();
     addTimeScore();
     drawMatrix(matrix);
     addSizeOptions();
@@ -338,9 +340,14 @@ function continueGame() {
 function finishGame() {
     console.log('finishGame')
     pausedTimer();
+    if (allowSounds) {
+        const winSound = new Audio('./styles/sounds/winMusic.mp3')
+        winSound.play();
+    }
     document.querySelector('.button-pause').removeEventListener('click', pauseGame);
     const overlay = makeModalWindow(`Hooray! You solved the puzzle in ${setTime(time)} and ${steps} moves!`)
     document.querySelector('.squares-container').prepend(overlay)
+    
 }
 
 function returnUnfinishedGame() {
@@ -360,15 +367,19 @@ function returnUnfinishedGame() {
     // const btnLastGame = document.querySelector('.button-unfinished');
 }
 
+function drawSaveGameBtn() {
+    const btnLastGame = createButton('continue', returnUnfinishedGame, 'button', 'button-unfinished')
+    const saveBtn = document.querySelector('.button-save');
+    saveBtn.after(btnLastGame);
+}
+
 function saveGame() {
     console.log('saveGame')
     pausedTimer();
     const lastGame = {matrix: matrixCurState, moves: steps, timer: time}
     console.log(JSON.stringify(lastGame), 'JSON.stringify(lastGame)')
     localStorage.setItem('lastGame', JSON.stringify(lastGame))
-    const btnLastGame = createButton('continue', returnUnfinishedGame, 'button', 'button-unfinished')
-    const saveBtn = document.querySelector('.button-save');
-    saveBtn.after(btnLastGame);
+    drawSaveGameBtn();
 }
 
 function showGameResults() {
