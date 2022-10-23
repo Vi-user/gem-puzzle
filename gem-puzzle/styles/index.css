@@ -385,6 +385,7 @@ body {
   display: inline-block;
   width: 40px;
   height: 40px;
+  cursor: pointer;
   background: -webkit-linear-gradient(50deg, #a2a49f, #e0d0c4, #f1dac4); /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(50deg, #a2a49f, #e0d0c4, #f1dac4); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
