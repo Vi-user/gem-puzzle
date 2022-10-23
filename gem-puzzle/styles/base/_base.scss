@@ -11,6 +11,7 @@ html {
 body {
   font-family: 'Roboto';
   background: -webkit-linear-gradient(90deg,#a2a49f,#e0d0c4,#f1dac4); /* Chrome 10-25, Safari 5.1-6 */ background: linear-gradient(90deg,#a2a49f,#e0d0c4,#f1dac4); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  //font-size: clamp(1.5rem, 75%, 3rem);
   font-size: 3rem;
   font-weight: bold;
   @media screen and (max-device-width: 500px){
@@ -26,5 +27,5 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 30px;
-  padding: 40px 20px;
+  padding: 20px 20px;
 }

@@ -1,4 +1,4 @@
-console.log('index.js');
+// console.log('index.js');
 /*=================GAME LOGIC===================*/
 let MATRIX_SIZE = 4;
 const EMPTY_TILE = '';
@@ -57,9 +57,9 @@ const swapElements = (matrix, a, b) => {
 }
 
 const shuffleMatrix = (matrix) => {
-    console.log(MATRIX_SIZE, 'shuffleMatrix MATRIX_SIZE')
-    for (let i = 0; i < 2; i++) {
-        // for (let i = 0; i < MATRIX_SIZE*25; i++) {
+    // console.log(MATRIX_SIZE, 'shuffleMatrix MATRIX_SIZE')
+    // for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < MATRIX_SIZE*25; i++) {
         const emptyElCoord = findCoordinates(matrix, EMPTY_TILE);
         const chooseRandomCoord = getRandomNum(0, 2);
         const isExtremeEl = (emptyElCoord[chooseRandomCoord] === 0 || emptyElCoord[chooseRandomCoord] === MATRIX_SIZE - 1)
@@ -90,7 +90,7 @@ const compareCoordinates = (a, b) => {
     if ((x1 === x2 && (Math.abs(y1 - y2) === 1)) || (y1 === y2 && (Math.abs(x1 - x2) === 1))) {
         return true
     }
-    console.log('forbidden, curElCoordinates:', b)
+    // console.log('forbidden, curElCoordinates:', b)
     return false
 }
 
@@ -103,7 +103,7 @@ const tryToMove = (matrix, curEl) => {
         swapElements(matrix, curElCoordinates, emptyElCoordinates);
         matrixCurState = matrix;
 
-        console.log('can move, curElCoordinates:', curElCoordinates)
+        // console.log('can move, curElCoordinates:', curElCoordinates)
         return true;
     }
     return false
@@ -137,8 +137,8 @@ function highlightWrongElement(curEl) {
 }
 
 function drawMatrix(matrix) {
-    console.log('drawMatrix');
-    console.log('matrix', matrix)
+    // console.log('drawMatrix');
+    // console.log('matrix', matrix)
     if (document.querySelector('.squares-container')) {
         document.querySelector('.squares-container').remove();
     }
@@ -248,7 +248,7 @@ function addSizeOptions() {
     const sizeOptionsRow = createElement('div', 'matrix-sizes-row');
     for (let i = 3; i <= 8; i++) {
         const button = createElement('button', 'button', 'small-btn', `btn-size-${i}`)
-        button.textContent = `${i}*${i}`
+        button.textContent = `${i} × ${i}`
         button.addEventListener('click', matrixChangeSize)
         sizeOptionsRow.append(button);
     }
@@ -308,10 +308,9 @@ function startGame() {
 startGame()
 
 function restartGame() {
-    console.log('restartGame')
-
+    // console.log('restartGame')
     const matrix = makeMatrix(MATRIX_SIZE * MATRIX_SIZE);
-    console.log(matrix, 'restart matrix')
+    // console.log(matrix, 'restart matrix')
     shuffleMatrix(matrix);
     drawMatrix(matrix);
     addTileClickHandler(matrix);
@@ -325,9 +324,9 @@ function restartGame() {
 }
 
 function matrixChangeSize(e) {
-    console.log('restartGameChangeSize')
+    // console.log('restartGameChangeSize')
     e.preventDefault();
-    console.log(e.target.innerText.slice(-1), 'e.target.innerText.slice(-1)')
+    // console.log(e.target.innerText.slice(-1), 'e.target.innerText.slice(-1)')
     const matrixSize = e.target.innerText.slice(-1);
     setMatrixSize(matrixSize);
     RIGHT_ORDER = makeMatrix(matrixSize * matrixSize)
@@ -335,7 +334,7 @@ function matrixChangeSize(e) {
 }
 
 function pauseGame() {
-    console.log('pauseGame')
+    // console.log('pauseGame')
     if (isPaused) return;
     pauseTimer();
     const continueBtn = createButton('continue', continueGame, 'button', 'continue-button');
@@ -344,14 +343,14 @@ function pauseGame() {
 }
 
 function continueGame() {
-    console.log('continueGame')
+    // console.log('continueGame')
     const overlay = document.querySelector('.overlay');
     overlay.remove();
     startTimer();
 }
 
 function saveResults() {
-    console.log('saveResults')
+    // console.log('saveResults')
     const date = new Date();
     const wonGame = {size: MATRIX_SIZE, moves: steps, timer: time, date: date.toLocaleDateString()}
 
@@ -366,7 +365,7 @@ function saveResults() {
 }
 
 function finishGame() {
-    console.log('finishGame')
+    // console.log('finishGame')
     pauseTimer();
     if (allowSounds) {
         winSound.play();
@@ -377,8 +376,8 @@ function finishGame() {
 }
 
 function returnUnfinishedGame() {
-    console.log('returnUnfinishedGame');
-    console.log(JSON.parse(localStorage.lastGame), 'JSON.parse(localStorage.lastGame)')
+    // console.log('returnUnfinishedGame');
+    // console.log(JSON.parse(localStorage.lastGame), 'JSON.parse(localStorage.lastGame)')
     const lastGame = JSON.parse(localStorage.lastGame);
     matrixCurState = lastGame.matrix;
     time = lastGame.timer;
@@ -405,10 +404,10 @@ function drawSaveGameBtn() {
 }
 
 function saveGame() {
-    console.log('saveGame')
+    // console.log('saveGame')
     pauseTimer();
     const lastGame = {matrix: matrixCurState, moves: steps, timer: time}
-    console.log(JSON.stringify(lastGame), 'JSON.stringify(lastGame)')
+    // console.log(JSON.stringify(lastGame), 'JSON.stringify(lastGame)')
     localStorage.setItem('lastGame', JSON.stringify(lastGame))
     drawSaveGameBtn();
 }
@@ -418,7 +417,7 @@ function closeResultWindow() {
 }
 
 function showGameResults() {
-    console.log('showGameResults')
+    // console.log('showGameResults')
     const overlay = createElement('div', 'overlay', 'results-overlay');
     const modal = createElement('div', 'modal');
 
@@ -440,7 +439,7 @@ function showGameResults() {
         for (let [key, value] of Object.entries(sortedArray[i])) {
             const tableItem = createElement('div', 'table-item');
             if (key === 'size') {
-                tableItem.innerHTML = `${value} x ${value}`;
+                tableItem.innerHTML = `${value} × ${value}`;
             } else if (key === 'timer') {
                 tableItem.textContent = getTimeInMinutes(value);
             } else {
