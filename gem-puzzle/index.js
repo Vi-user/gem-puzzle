@@ -257,23 +257,26 @@ function addSizeOptions() {
 
 /*=================CONTROLLER===================*/
 const addTileClickHandler = (matrix) => {
-    document.querySelector('.squares-container').addEventListener('click', (e) => {
-        const value = e.target.innerText;
-        if (tryToMove(matrix, value)) {
-            if (allowSounds) {
-                whooshSound.play();
+    const tiles = document.querySelectorAll('.item');
+    tiles.forEach(el => el.addEventListener('click', (e) => {
+            const value = e.target.innerText;
+            const moveSuccessful = tryToMove(matrix, value);
+            if (moveSuccessful) {
+                if (allowSounds) {
+                    whooshSound.play();
+                }
+                document.querySelector('.squares-container').remove();
+                drawMatrix(matrix);
+                addTileClickHandler(matrix);
+            } else {
+                if (allowSounds) {
+                    ooupsSound.play();
+                }
+                highlightWrongElement(value);
             }
-            document.querySelector('.squares-container').remove();
-            drawMatrix(matrix);
-            addTileClickHandler(matrix);
-        } else {
-            if (allowSounds) {
-                ooupsSound.play();
-            }
-            highlightWrongElement(value);
-        }
-        if (checkIfGameOver(matrix)) finishGame();
-    })
+            if (checkIfGameOver(matrix)) finishGame();
+        })
+    )
 }
 
 function setMatrixSize(value = 4) {
