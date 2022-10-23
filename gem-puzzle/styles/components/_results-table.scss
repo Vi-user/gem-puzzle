@@ -1,5 +1,6 @@
 .result-container {
   font-size: clamp(1rem, 75%, 3rem);
+  margin-bottom: 50px;
 }
 .table-header {
   color: salmon;
@@ -20,6 +21,8 @@
 .close-button {
   display: block;
   position: absolute;
+  width: 30px;
+  height: 30px;
   top: 25px;
   right: 40px;
   &:after,
@@ -33,9 +36,11 @@
     background-color: salmon;
   }
   &:after {
+    top: 50%;
     transform: rotate(45deg);
   }
   &:before {
+    top: 50%;
     transform: rotate(-45deg);
   }
 }

@@ -9,7 +9,6 @@ let time = 0;
 let steps = 0;
 let allowSounds = false;
 let existSavedGame = localStorage.hasOwnProperty('lastGame');
-let existFinishedGames = localStorage.hasOwnProperty('results');
 const winSound = new Audio('./styles/sounds/winMusic.mp3');
 const whooshSound = new Audio('./styles/sounds/whoosh.mp3');
 const ooupsSound = new Audio('./styles/sounds/oou.mp3');
@@ -293,7 +292,6 @@ function startGame() {
     drawWrapper();
     addButtons();
     if (existSavedGame) drawSaveGameBtn();
-    if (existFinishedGames) drawClearResultsBtn();
     addTimeScore();
     drawMatrix(matrix);
 
@@ -397,13 +395,7 @@ function returnUnfinishedGame() {
 
 function clearResults() {
     localStorage.removeItem('results')
-    document.querySelector('.button-clear-results').remove();
-}
-
-function drawClearResultsBtn() {
-    const btnClearGameResults = createButton('clear results', clearResults, 'button', 'button-clear-results')
-    const resultsBtn = document.querySelector('.button-result');
-    resultsBtn.after(btnClearGameResults);
+    document.querySelector('.results-overlay').remove();
 }
 
 function drawSaveGameBtn() {
@@ -422,26 +414,28 @@ function saveGame() {
 }
 
 function closeResultWindow() {
-    document.querySelector('.overlay').remove()
-    // startTimer();
+    document.querySelector('.results-overlay').remove();
 }
 
 function showGameResults() {
     console.log('showGameResults')
-    // pausedTimer();
-    const results = Array.from(JSON.parse(localStorage.results));
-    const sortedArray = results.sort((a, b) => (b.size - a.size || b.moves.toString().localeCompare(a.moves.toString()))).slice(0, 10);
-    const table = createElement('div', 'result-container')
-    const tableHeader = createElement('div', 'table-row', 'table-header')
-    const keys = Object.keys(results[0]);
-    keys.forEach(el => {
-        const headerItem = createElement('div', 'table-item');
-        headerItem.textContent = el;
-        tableHeader.append(headerItem)
-    })
-    table.append(tableHeader)
+    const overlay = createElement('div', 'overlay', 'results-overlay');
+    const modal = createElement('div', 'modal');
 
-    for (let i = 0; i < sortedArray.length; i++) {
+    if (localStorage.hasOwnProperty('results')) {
+        const results = Array.from(JSON.parse(localStorage.results));
+        const sortedArray = results.sort((a, b) => (b.size - a.size || b.moves.toString().localeCompare(a.moves.toString()))).slice(0, 10);
+        const table = createElement('div', 'result-container')
+        const tableHeader = createElement('div', 'table-row', 'table-header')
+        const keys = Object.keys(results[0]);
+        keys.forEach(el => {
+            const headerItem = createElement('div', 'table-item');
+            headerItem.textContent = el;
+            tableHeader.append(headerItem)
+        })
+        table.append(tableHeader)
+
+        for (let i = 0; i < sortedArray.length; i++) {
         const tableRow = createElement('div', 'table-row');
         for (let [key, value] of Object.entries(sortedArray[i])) {
             const tableItem = createElement('div', 'table-item');
@@ -458,13 +452,18 @@ function showGameResults() {
         table.append(tableRow)
     }
 
-    const closeBtn = createElement('span', 'close-button')
-    closeBtn.addEventListener('click', closeResultWindow)
+        const btnClearGameResults = createButton('clear results', clearResults, 'button', 'button-clear-results')
 
-    console.log(table);
-    const overlay = createElement('div', 'overlay');
-    const modal = createElement('div', 'modal');
-    modal.append(table)
+        modal.append(table, btnClearGameResults)
+    } else {
+        const note = createElement('div', 'note');
+        note.textContent = `No collected games yet`;
+        modal.append(note)
+    }
+
+    const closeBtn = createElement('span', 'close-button');
+    closeBtn.addEventListener('click', closeResultWindow);
+
     overlay.append(modal, closeBtn)
 
     document.querySelector('body').append(overlay)
