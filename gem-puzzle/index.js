@@ -293,6 +293,11 @@ function startGame() {
     if (existFinishedGames) drawClearResultsBtn();
     addTimeScore();
     drawMatrix(matrix);
+
+    const overlay = makeModalWindow('To start the game, choose its size')
+    document.querySelector('.squares-container').prepend(overlay)
+    pauseTimer();
+
     addSizeOptions();
     addTileClickHandler(matrix);
     setInterval(timeIncrease, 1000);
