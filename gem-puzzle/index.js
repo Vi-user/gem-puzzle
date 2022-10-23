@@ -359,7 +359,7 @@ function saveResults() {
         results.push(wonGame);
         localStorage.setItem('results', JSON.stringify(results))
     } else {
-        localStorage.setItem('results', JSON.stringify(wonGame))
+        localStorage.setItem('results', JSON.stringify([wonGame]))
     }
 
 }
