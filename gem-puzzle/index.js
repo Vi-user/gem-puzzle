@@ -2,7 +2,7 @@ console.log('index.js');
 /*=================GAME LOGIC===================*/
 let MATRIX_SIZE = 4;
 const EMPTY_TILE = '';
-let RIGHT_ORDER = makeMatrix(MATRIX_SIZE*MATRIX_SIZE );
+let RIGHT_ORDER = makeMatrix(MATRIX_SIZE * MATRIX_SIZE);
 let matrixCurState = [];
 let isPaused = false;
 let time = 0;
@@ -60,23 +60,23 @@ const swapElements = (matrix, a, b) => {
 const shuffleMatrix = (matrix) => {
     console.log(MATRIX_SIZE, 'shuffleMatrix MATRIX_SIZE')
     for (let i = 0; i < 2; i++) {
-    // for (let i = 0; i < MATRIX_SIZE*25; i++) {
+        // for (let i = 0; i < MATRIX_SIZE*25; i++) {
         const emptyElCoord = findCoordinates(matrix, EMPTY_TILE);
         const chooseRandomCoord = getRandomNum(0, 2);
-        const isExtremeEl = (emptyElCoord[chooseRandomCoord] === 0 || emptyElCoord[chooseRandomCoord] === MATRIX_SIZE-1 )
+        const isExtremeEl = (emptyElCoord[chooseRandomCoord] === 0 || emptyElCoord[chooseRandomCoord] === MATRIX_SIZE - 1)
         const elToMoveCoord = emptyElCoord.slice();
         if (isExtremeEl && emptyElCoord[chooseRandomCoord] === 0) {
             emptyElCoord[chooseRandomCoord]++
         }
-        if (isExtremeEl && emptyElCoord[chooseRandomCoord] === MATRIX_SIZE-1) {
+        if (isExtremeEl && emptyElCoord[chooseRandomCoord] === MATRIX_SIZE - 1) {
             emptyElCoord[chooseRandomCoord]--
         }
         if (!isExtremeEl) {
             emptyElCoord[chooseRandomCoord] = (getRandomNum(0, 2) === 1) ?
-                emptyElCoord[chooseRandomCoord] + 1:
+                emptyElCoord[chooseRandomCoord] + 1 :
                 emptyElCoord[chooseRandomCoord] - 1;
         }
-        swapElements(matrix, elToMoveCoord , emptyElCoord)
+        swapElements(matrix, elToMoveCoord, emptyElCoord)
     }
     matrixCurState = matrix;
     return matrix;
@@ -139,7 +139,10 @@ function highlightWrongElement(curEl) {
 
 function drawMatrix(matrix) {
     console.log('drawMatrix');
-    console.log('matrix',matrix)
+    console.log('matrix', matrix)
+    if (document.querySelector('.squares-container')) {
+        document.querySelector('.squares-container').remove();
+    }
     const node = document.querySelector('.time-score-row')
     const squaresContainer = createElement('div', 'squares-container');
 
@@ -162,7 +165,7 @@ function drawMatrix(matrix) {
 
 /*===================BUTTONS=====================*/
 
-function createButton(name, listener,  ...classes) {
+function createButton(name, listener, ...classes) {
     const button = createElement('button', ...classes);
     button.innerText = name;
     button.addEventListener('click', listener)
@@ -194,12 +197,12 @@ function startTimer() {
     isPaused = false
 }
 
-function pausedTimer() {
+function pauseTimer() {
     isPaused = true
 }
 
 function timeIncrease() {
-    if(!isPaused) {
+    if (!isPaused) {
         time++;
         setTime(time);
     }
@@ -283,6 +286,7 @@ function setMatrixSize(value = 4) {
     MATRIX_SIZE = value;
 }
 
+
 function startGame() {
     setMatrixSize(4);
     const matrix = makeMatrix(MATRIX_SIZE * MATRIX_SIZE);
@@ -308,13 +312,14 @@ startGame()
 
 function restartGame() {
     console.log('restartGame')
-    document.querySelector('.squares-container').remove();
-    const matrix = makeMatrix(MATRIX_SIZE*MATRIX_SIZE);
+
+    const matrix = makeMatrix(MATRIX_SIZE * MATRIX_SIZE);
     console.log(matrix, 'restart matrix')
     shuffleMatrix(matrix);
     drawMatrix(matrix);
     addTileClickHandler(matrix);
     startTimer();
+    isPaused = false;
     document.querySelector('.score-steps').textContent = 0;
     document.querySelector('.timer').textContent = '00:00';
     time = 0;
@@ -328,14 +333,14 @@ function matrixChangeSize(e) {
     console.log(e.target.innerText.slice(-1), 'e.target.innerText.slice(-1)')
     const matrixSize = e.target.innerText.slice(-1);
     setMatrixSize(matrixSize);
-    RIGHT_ORDER = makeMatrix(matrixSize*matrixSize)
+    RIGHT_ORDER = makeMatrix(matrixSize * matrixSize)
     restartGame();
 }
 
 function pauseGame() {
-    document.querySelector('.button-pause').removeEventListener('click', pauseGame)
     console.log('pauseGame')
-    pausedTimer();
+    if (isPaused) return;
+    pauseTimer();
     const continueBtn = createButton('continue', continueGame, 'button', 'continue-button');
     const overlay = makeModalWindow('You stopped the game, to continue press the button:', continueBtn)
     document.querySelector('.squares-container').prepend(overlay)
@@ -346,7 +351,6 @@ function continueGame() {
     const overlay = document.querySelector('.overlay');
     overlay.remove();
     startTimer();
-    document.querySelector('.button-pause').addEventListener('click', pauseGame)
 }
 
 function saveResults() {
@@ -366,11 +370,10 @@ function saveResults() {
 
 function finishGame() {
     console.log('finishGame')
-    pausedTimer();
+    pauseTimer();
     if (allowSounds) {
         winSound.play();
     }
-    document.querySelector('.button-pause').removeEventListener('click', pauseGame);
     const overlay = makeModalWindow(`Hooray! You solved the puzzle in ${setTime(time)} and ${steps} moves!`)
     document.querySelector('.squares-container').prepend(overlay)
     saveResults();
@@ -412,7 +415,7 @@ function drawSaveGameBtn() {
 
 function saveGame() {
     console.log('saveGame')
-    pausedTimer();
+    pauseTimer();
     const lastGame = {matrix: matrixCurState, moves: steps, timer: time}
     console.log(JSON.stringify(lastGame), 'JSON.stringify(lastGame)')
     localStorage.setItem('lastGame', JSON.stringify(lastGame))
@@ -428,7 +431,7 @@ function showGameResults() {
     console.log('showGameResults')
     // pausedTimer();
     const results = Array.from(JSON.parse(localStorage.results));
-    const sortedArray = results.sort((a,b)=> (b.size - a.size || b.moves.toString().localeCompare(a.moves.toString())  )).slice(0,10);
+    const sortedArray = results.sort((a, b) => (b.size - a.size || b.moves.toString().localeCompare(a.moves.toString()))).slice(0, 10);
     const table = createElement('div', 'result-container')
     const tableHeader = createElement('div', 'table-row', 'table-header')
     const keys = Object.keys(results[0]);
@@ -445,8 +448,7 @@ function showGameResults() {
             const tableItem = createElement('div', 'table-item');
             if (key === 'size') {
                 tableItem.innerHTML = `${value} x ${value}`;
-            } else
-            if (key === 'timer') {
+            } else if (key === 'timer') {
                 tableItem.textContent = setTime(value);
             } else {
                 tableItem.textContent = value;
