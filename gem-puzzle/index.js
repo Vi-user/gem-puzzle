@@ -7,9 +7,12 @@ let matrixCurState = [];
 let isPaused = false;
 let time = 0;
 let steps = 0;
-let allowSounds = true;
+let allowSounds = false;
 let existSavedGame = localStorage.hasOwnProperty('lastGame');
 let existFinishedGames = localStorage.hasOwnProperty('results');
+const winSound = new Audio('./styles/sounds/winMusic.mp3');
+const whooshSound = new Audio('./styles/sounds/whoosh.mp3');
+const ooupsSound = new Audio('./styles/sounds/oou.mp3');
 
 const getRandomNum = (min, max) => {
     return Math.floor(Math.random() * (max - min)) + min;
@@ -173,7 +176,7 @@ function addButtons() {
     const pauseBtn = createButton('pause', pauseGame, 'button', 'button-pause')
     const saveBtn = createButton('save', saveGame, 'button', 'button-save')
     const resultBtn = createButton('result', showGameResults, 'button', 'button-result')
-    const soundIcon = createElement('span', 'icon', 'icon-sound', 'icon-sound_on');
+    const soundIcon = createElement('span', 'icon', 'icon-sound', 'icon-sound_off');
     soundIcon.addEventListener('click', switchMusic)
     buttonsRow.append(restartBtn, pauseBtn, saveBtn, resultBtn, soundIcon);
 
@@ -258,7 +261,6 @@ const addTileClickHandler = (matrix) => {
         const value = e.target.innerText;
         if (tryToMove(matrix, value)) {
             if (allowSounds) {
-                const whooshSound = new Audio('./styles/sounds/whoosh.mp3')
                 whooshSound.play();
             }
             document.querySelector('.squares-container').remove();
@@ -266,8 +268,7 @@ const addTileClickHandler = (matrix) => {
             addTileClickHandler(matrix);
         } else {
             if (allowSounds) {
-                const whooshSound = new Audio('./styles/sounds/oou.mp3')
-                whooshSound.play();
+                ooupsSound.play();
             }
             highlightWrongElement(value);
         }
@@ -358,7 +359,6 @@ function finishGame() {
     console.log('finishGame')
     pausedTimer();
     if (allowSounds) {
-        const winSound = new Audio('./styles/sounds/winMusic.mp3')
         winSound.play();
     }
     document.querySelector('.button-pause').removeEventListener('click', pauseGame);
@@ -462,6 +462,7 @@ function showGameResults() {
 
 function switchMusic() {
     const switcher = document.querySelector('.icon-sound');
+    switcher.classList.toggle('icon-sound_on');
     switcher.classList.toggle('icon-sound_off');
     allowSounds = (!allowSounds);
 }
