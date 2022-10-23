@@ -103,7 +103,7 @@ const tryToMove = (matrix, curEl) => {
         setSteps(steps);
         swapElements(matrix, curElCoordinates, emptyElCoordinates);
         matrixCurState = matrix;
-        if (checkIfGameOver(matrix)) return finishGame();
+
         console.log('can move, curElCoordinates:', curElCoordinates)
         return true;
     }
@@ -272,6 +272,7 @@ const addTileClickHandler = (matrix) => {
             }
             highlightWrongElement(value);
         }
+        if (checkIfGameOver(matrix)) finishGame();
     })
 }
 
