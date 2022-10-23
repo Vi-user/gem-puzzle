@@ -464,6 +464,7 @@ body {
   position: absolute;
   width: 100%;
   height: 100%;
+  top: 0;
   background-color: rgba(0, 0, 0, 0.9);
   z-index: 5;
   display: flex;
@@ -472,8 +473,8 @@ body {
 }
 
 .modal {
+  width: 80%;
   color: white;
-  padding: 20px;
   text-align: center;
 }
 
@@ -507,6 +508,47 @@ body {
   width: 100%;
   gap: 30px;
   margin-top: 20px;
+}
+
+.result-container {
+  font-size: clamp(1rem, 75%, 3rem);
+}
+
+.table-header {
+  color: salmon;
+}
+
+.table-row {
+  border: 1px solid green;
+  display: flex;
+}
+
+.table-item {
+  border: 1px solid white;
+  padding: 15px;
+  width: 25%;
+}
+
+.close-button {
+  display: block;
+  position: absolute;
+  top: 25px;
+  right: 40px;
+}
+.close-button:after, .close-button:before {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 30px;
+  height: 3px;
+  border-radius: 2px;
+  background-color: salmon;
+}
+.close-button:after {
+  transform: rotate(45deg);
+}
+.close-button:before {
+  transform: rotate(-45deg);
 }
 
 /*# sourceMappingURL=index.css.map */

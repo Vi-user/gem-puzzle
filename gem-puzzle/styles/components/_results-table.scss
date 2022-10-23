@@ -1,0 +1,46 @@
+.result-container {
+  //width: 80%;
+  //font-size: 1rem;
+  font-size: clamp(1rem, 75%, 3rem);
+}
+.table-header {
+  color: salmon;
+}
+
+.table-row {
+  border: 1px solid green;
+  display: flex;
+  //&:nth-child(3) {
+  //  flex-grow: 3;
+  //}
+}
+
+.table-item {
+  border: 1px solid white;
+  padding: 15px;
+  width: 25%;
+
+}
+
+.close-button {
+  display: block;
+  position: absolute;
+  top: 25px;
+  right: 40px;
+  &:after,
+  &:before {
+    content: '';
+    display: block;
+    position: absolute;
+    width: 30px;
+    height: 3px;
+    border-radius: 2px;
+    background-color: salmon;
+  }
+  &:after {
+    transform: rotate(45deg);
+  }
+  &:before {
+    transform: rotate(-45deg);
+  }
+}

@@ -55,7 +55,7 @@ const swapElements = (matrix, a, b) => {
 
 const shuffleMatrix = (matrix) => {
     console.log(MATRIX_SIZE, 'shuffleMatrix MATRIX_SIZE')
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 2; i++) {
     // for (let i = 0; i < MATRIX_SIZE*25; i++) {
         const emptyElCoord = findCoordinates(matrix, EMPTY_TILE);
         const chooseRandomCoord = getRandomNum(0, 2);
@@ -337,6 +337,21 @@ function continueGame() {
     document.querySelector('.button-pause').addEventListener('click', pauseGame)
 }
 
+function saveResults() {
+    console.log('saveResults')
+    const date = new Date();
+    const wonGame = {size: MATRIX_SIZE, moves: steps, timer: time, date: date.toLocaleDateString()}
+
+    if (localStorage.hasOwnProperty('results')) {
+        const results = Array.from(JSON.parse(localStorage.results));
+        results.push(wonGame);
+        localStorage.setItem('results', JSON.stringify(results))
+    } else {
+        localStorage.setItem('results', JSON.stringify(wonGame))
+    }
+
+}
+
 function finishGame() {
     console.log('finishGame')
     pausedTimer();
@@ -347,7 +362,7 @@ function finishGame() {
     document.querySelector('.button-pause').removeEventListener('click', pauseGame);
     const overlay = makeModalWindow(`Hooray! You solved the puzzle in ${setTime(time)} and ${steps} moves!`)
     document.querySelector('.squares-container').prepend(overlay)
-    
+    saveResults();
 }
 
 function returnUnfinishedGame() {
@@ -382,8 +397,54 @@ function saveGame() {
     drawSaveGameBtn();
 }
 
+function closeResultWindow() {
+    document.querySelector('.overlay').remove()
+    // startTimer();
+}
+
 function showGameResults() {
     console.log('showGameResults')
+    // pausedTimer();
+    const results = Array.from(JSON.parse(localStorage.results));
+    const sortedArray = results.sort((a,b)=> (b.size - a.size || b.moves.toString().localeCompare(a.moves.toString())  )).slice(0,10);
+    const table = createElement('div', 'result-container')
+    const tableHeader = createElement('div', 'table-row', 'table-header')
+    const keys = Object.keys(results[0]);
+    keys.forEach(el => {
+        const headerItem = createElement('div', 'table-item');
+        headerItem.textContent = el;
+        tableHeader.append(headerItem)
+    })
+    table.append(tableHeader)
+
+    for (let i = 0; i < sortedArray.length; i++) {
+        const tableRow = createElement('div', 'table-row');
+        for (let [key, value] of Object.entries(sortedArray[i])) {
+            const tableItem = createElement('div', 'table-item');
+            if (key === 'size') {
+                tableItem.innerHTML = `${value} x ${value}`;
+            } else
+            if (key === 'timer') {
+                tableItem.textContent = setTime(value);
+            } else {
+                tableItem.textContent = value;
+            }
+
+            tableRow.append(tableItem)
+        }
+        table.append(tableRow)
+    }
+
+    const closeBtn = createElement('span', 'close-button')
+    closeBtn.addEventListener('click', closeResultWindow)
+
+    console.log(table);
+    const overlay = createElement('div', 'overlay');
+    const modal = createElement('div', 'modal');
+    modal.append(table)
+    overlay.append(modal, closeBtn)
+
+    document.querySelector('body').append(overlay)
 }
 
 function switchMusic() {
