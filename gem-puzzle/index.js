@@ -204,16 +204,15 @@ function pauseTimer() {
 function timeIncrease() {
     if (!isPaused) {
         time++;
-        setTime(time);
+        const timer = document.querySelector('.timer');
+        timer.innerHTML = getTimeInMinutes(time);
     }
 }
 
-function setTime(value) {
+function getTimeInMinutes(value) {
     const seconds = (value % 60).toString();
     const minutes = Math.trunc(value / 60).toString();
-    const timer = document.querySelector('.timer');
     const timeInMins = `${minutes.padStart(2, '0')}:${seconds.padStart(2, '0')}`;
-    timer.innerHTML = timeInMins;
     return timeInMins;
 }
 
@@ -374,7 +373,7 @@ function finishGame() {
     if (allowSounds) {
         winSound.play();
     }
-    const overlay = makeModalWindow(`Hooray! You solved the puzzle in ${setTime(time)} and ${steps} moves!`)
+    const overlay = makeModalWindow(`Hooray! You solved the puzzle in ${getTimeInMinutes(time)} and ${steps} moves!`)
     document.querySelector('.squares-container').prepend(overlay)
     saveResults();
 }
@@ -449,7 +448,7 @@ function showGameResults() {
             if (key === 'size') {
                 tableItem.innerHTML = `${value} x ${value}`;
             } else if (key === 'timer') {
-                tableItem.textContent = setTime(value);
+                tableItem.textContent = getTimeInMinutes(value);
             } else {
                 tableItem.textContent = value;
             }
