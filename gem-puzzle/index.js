@@ -9,6 +9,7 @@ let time = 0;
 let steps = 0;
 let allowSounds = true;
 let existSavedGame = localStorage.hasOwnProperty('lastGame');
+let existFinishedGames = localStorage.hasOwnProperty('results');
 
 const getRandomNum = (min, max) => {
     return Math.floor(Math.random() * (max - min)) + min;
@@ -284,6 +285,7 @@ function startGame() {
     drawWrapper();
     addButtons();
     if (existSavedGame) drawSaveGameBtn();
+    if (existFinishedGames) drawClearResultsBtn();
     addTimeScore();
     drawMatrix(matrix);
     addSizeOptions();
@@ -382,8 +384,19 @@ function returnUnfinishedGame() {
     // const btnLastGame = document.querySelector('.button-unfinished');
 }
 
+function clearResults() {
+    localStorage.removeItem('results')
+    document.querySelector('.button-clear-results').remove();
+}
+
+function drawClearResultsBtn() {
+    const btnClearGameResults = createButton('clear results', clearResults, 'button', 'button-clear-results')
+    const resultsBtn = document.querySelector('.button-result');
+    resultsBtn.after(btnClearGameResults);
+}
+
 function drawSaveGameBtn() {
-    const btnLastGame = createButton('continue', returnUnfinishedGame, 'button', 'button-unfinished')
+    const btnLastGame = createButton('continue saved game', returnUnfinishedGame, 'button', 'button-unfinished')
     const saveBtn = document.querySelector('.button-save');
     saveBtn.after(btnLastGame);
 }

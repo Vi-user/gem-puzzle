@@ -1,6 +1,4 @@
 .result-container {
-  //width: 80%;
-  //font-size: 1rem;
   font-size: clamp(1rem, 75%, 3rem);
 }
 .table-header {
@@ -10,9 +8,6 @@
 .table-row {
   border: 1px solid green;
   display: flex;
-  //&:nth-child(3) {
-  //  flex-grow: 3;
-  //}
 }
 
 .table-item {
