@@ -25,6 +25,7 @@
   border-radius: 8px;
   overflow: hidden;
   cursor: pointer;
+  transition: all 0.3s ease;
   @media screen and (max-device-width: 650px){
     font-size: 2rem;
   }
@@ -33,6 +34,9 @@
   }
   @media screen and (max-device-width: 430px){
     font-size: 1rem;
+  }
+  &:active {
+    cursor: grabbing;
   }
 }
 
@@ -47,4 +51,24 @@
 
 .warning {
   color: red;
+}
+
+.hold {
+  opacity: 0.1;
+}
+
+.toRight {
+  transform: translateX(-100%);
+}
+
+.toLeft {
+  transform: translateX(100%);
+}
+
+.toDown {
+  transform: translateY(-100%);
+}
+
+.toUp {
+  transform: translateY(100%);
 }

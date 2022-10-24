@@ -58,8 +58,7 @@ const swapElements = (matrix, a, b) => {
 
 const shuffleMatrix = (matrix) => {
     // console.log(MATRIX_SIZE, 'shuffleMatrix MATRIX_SIZE')
-    // for (let i = 0; i < 2; i++) {
-    for (let i = 0; i < MATRIX_SIZE*25; i++) {
+    for (let i = 0; i < MATRIX_SIZE**3+100; i++) {
         const emptyElCoord = findCoordinates(matrix, EMPTY_TILE);
         const chooseRandomCoord = getRandomNum(0, 2);
         const isExtremeEl = (emptyElCoord[chooseRandomCoord] === 0 || emptyElCoord[chooseRandomCoord] === MATRIX_SIZE - 1)
@@ -95,14 +94,15 @@ const compareCoordinates = (a, b) => {
 }
 
 const tryToMove = (matrix, curEl) => {
+    console.log('entry params', matrix, curEl)
     const emptyElCoordinates = findCoordinates(matrix, EMPTY_TILE)
     const curElCoordinates = findCoordinates(matrix, curEl);
+    console.log('tryToMove, curElCoordinates:', curElCoordinates, emptyElCoordinates)
     if (compareCoordinates(emptyElCoordinates, curElCoordinates)) {
         steps++;
         setSteps(steps);
         swapElements(matrix, curElCoordinates, emptyElCoordinates);
         matrixCurState = matrix;
-
         // console.log('can move, curElCoordinates:', curElCoordinates)
         return true;
     }
@@ -136,7 +136,7 @@ function highlightWrongElement(curEl) {
     }, 100)
 }
 
-function drawMatrix(matrix) {
+function drawMatrix(matrix, movingTile, allowAnimation) {
     // console.log('drawMatrix');
     // console.log('matrix', matrix)
     if (document.querySelector('.squares-container')) {
@@ -152,9 +152,21 @@ function drawMatrix(matrix) {
             // console.log('el', el);
             const tile = createElement('div', 'item');
             if (el === EMPTY_TILE) {
-
                 tile.classList.add('empty-tile');
             }
+            if (allowAnimation && el === movingTile) {
+                const emptyElCoordinates = findCoordinates(matrix, EMPTY_TILE)
+                const curElCoordinates = findCoordinates(matrix, movingTile);
+                let result;
+                if (emptyElCoordinates[0] === curElCoordinates[0]) {
+                    result = (emptyElCoordinates[1] > curElCoordinates[1]) ? 'toLeft' : 'toRight';
+                } else {
+                    result = (emptyElCoordinates[0] > curElCoordinates[0]) ? 'toUp' : 'toDown';
+                }
+                tile.classList.add(result);
+                setTimeout(() => tile.classList.remove(result))
+            }
+            tile.draggable = true;
             tile.textContent = el;
             row.append(tile)
         })
@@ -257,27 +269,43 @@ function addSizeOptions() {
 }
 
 /*=================CONTROLLER===================*/
+function onTileMove(matrix, value, allowAnimation) {
+    const moveSuccessful = tryToMove(matrix, value);
+    if (moveSuccessful) {
+        if (allowSounds) {
+            whooshSound.play();
+        }
+        drawMatrix(matrix, value, allowAnimation);
+        addTileClickHandler(matrix);
+    } else {
+        if (allowSounds) {
+            ooupsSound.play();
+        }
+        highlightWrongElement(value);
+    }
+    if (checkIfGameOver(matrix)) finishGame();
+}
+
+
 const addTileClickHandler = (matrix) => {
     const tiles = document.querySelectorAll('.item');
-    tiles.forEach(el => el.addEventListener('click', (e) => {
-            const value = e.target.innerText;
-            const moveSuccessful = tryToMove(matrix, value);
-            if (moveSuccessful) {
-                if (allowSounds) {
-                    whooshSound.play();
-                }
-                document.querySelector('.squares-container').remove();
-                drawMatrix(matrix);
-                addTileClickHandler(matrix);
-            } else {
-                if (allowSounds) {
-                    ooupsSound.play();
-                }
-                highlightWrongElement(value);
-            }
-            if (checkIfGameOver(matrix)) finishGame();
-        })
+    tiles.forEach(function (item) {
+        item.addEventListener('click',  (e) => onTileMove(matrix, e.target.textContent, true))
+        item.addEventListener('dragstart', dragStart)
+        item.addEventListener('dragend', (e) => dragEnd(matrix, e))
+        }
     )
+}
+
+function dragStart(e) {
+    console.log('dragStart', e.target.textContent)
+    e.target.classList.add('hold')
+}
+
+function dragEnd(matrix, e) {
+    console.log('dragEnd', e.target)
+    e.target.classList.remove('hold')
+    onTileMove(matrix, e.target.textContent, false)
 }
 
 function setMatrixSize(value = 4) {
@@ -312,6 +340,7 @@ function restartGame() {
     const matrix = makeMatrix(MATRIX_SIZE * MATRIX_SIZE);
     // console.log(matrix, 'restart matrix')
     shuffleMatrix(matrix);
+    matrixCurState = matrix;
     drawMatrix(matrix);
     addTileClickHandler(matrix);
     startTimer();
@@ -320,7 +349,7 @@ function restartGame() {
     document.querySelector('.timer').textContent = '00:00';
     time = 0;
     steps = 0;
-    matrixCurState = [];
+    // matrixCurState = [];
 }
 
 function matrixChangeSize(e) {

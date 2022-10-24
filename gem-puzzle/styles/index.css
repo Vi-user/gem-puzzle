@@ -434,6 +434,7 @@ body {
   border-radius: 8px;
   overflow: hidden;
   cursor: pointer;
+  transition: all 0.3s ease;
 }
 @media screen and (max-device-width: 650px) {
   .item {
@@ -450,6 +451,9 @@ body {
     font-size: 1rem;
   }
 }
+.item:active {
+  cursor: grabbing;
+}
 
 .empty-tile {
   background: -webkit-linear-gradient(270deg, #454545, #212121); /* Chrome 10-25, Safari 5.1-6 */
@@ -459,6 +463,26 @@ body {
 
 .warning {
   color: red;
+}
+
+.hold {
+  opacity: 0.1;
+}
+
+.toRight {
+  transform: translateX(-100%);
+}
+
+.toLeft {
+  transform: translateX(100%);
+}
+
+.toDown {
+  transform: translateY(-100%);
+}
+
+.toUp {
+  transform: translateY(100%);
 }
 
 .overlay {
@@ -538,6 +562,7 @@ body {
   height: 30px;
   top: 25px;
   right: 40px;
+  cursor: pointer;
 }
 .close-button:after, .close-button:before {
   content: "";
